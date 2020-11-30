@@ -1,7 +1,7 @@
 import face_recognition
 import cv2
-import numpy as np
-from pathlib import Path
+
+FILE_SEPARATOR = "/"
 
 # This is a demo of running face recognition on live video from your webcam. It's a little more complicated than the
 # other example, but it includes some basic performance tweaks to make things run a lot faster:
@@ -16,11 +16,11 @@ from pathlib import Path
 video_capture = cv2.VideoCapture(0)
 
 # Load a sample picture and learn how to recognize it.
-obama_image = face_recognition.load_image_file(Path("img")/"obama.jpg")
+obama_image = face_recognition.load_image_file(f"img{FILE_SEPARATOR}obama.jpg")
 obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
 
 # Load a second sample picture and learn how to recognize it.
-biden_image = face_recognition.load_image_file(Path("img")/"biden.jpg")
+biden_image = face_recognition.load_image_file(f"img{FILE_SEPARATOR}biden.jpg")
 biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
 
 # Create arrays of known face encodings and their names
@@ -32,6 +32,15 @@ known_face_names = [
     "Barack Obama",
     "Joe Biden"
 ]
+
+def argmin(arr):
+    lowest = arr[0]
+    idx = 0
+    for i in range(1, len(arr)):
+        if arr[i] < lowest:
+            lowest = arr[i]
+            idx = i
+    return idx
 
 # Initialize some variables
 face_locations = []
@@ -68,7 +77,7 @@ while True:
 
             # Or instead, use the known face with the smallest distance to the new face
             face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-            best_match_index = np.argmin(face_distances)
+            best_match_index = argmin(face_distances)
             if matches[best_match_index]:
                 name = known_face_names[best_match_index]
 
