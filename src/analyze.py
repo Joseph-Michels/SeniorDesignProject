@@ -20,8 +20,8 @@ with open("analysis.txt", 'r') as rf:
             outside.append(o_avg)
 
 bins = [0.025*n for n in range(48)]
-plt.hist(within, bins, alpha=0.5, label="within")
-plt.hist(outside, bins, alpha=0.5, label="outside")
-plt.legend(loc="upper right")
+plt.hist(within, bins, alpha=0.5, label="same person")
+plt.hist(outside, bins, alpha=0.5, label="different person")
+plt.legend(loc="upper left")
 plt.title("Average Case")
 plt.show()
