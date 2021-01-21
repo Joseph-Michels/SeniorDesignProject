@@ -1,127 +1,75 @@
-import face_recognition
+import face_recognition as frec
 import cv2
-from picamera import PiCamera
-from time import time as get_time
+import numpy as np
+from subprocess import call
+from datetime import datetime
 
-FILE_SEPARATOR = "/"
+FILE_SEP = "/"
+TARGET_IMG_PATH = "target.jpg"
+IMG_FOLDER = "img"
+IMG_DIR = f".{FILE_SEP}{IMG_FOLDER}{FILE_SEP}"
+IMG_FORMAT = "jpg"
 
-# This is a demo of running face recognition on live video from your webcam. It's a little more complicated than the
-# other example, but it includes some basic performance tweaks to make things run a lot faster:
-#   1. Process each video frame at 1/4 resolution (though still display it at full resolution)
-#   2. Only detect faces in every other frame of video.
+RESOLUTION = "1280x720" # "640x480" previously worked
+THRESHOLD = 0.7
 
-# PLEASE NOTE: This example requires OpenCV (the `cv2` library) to be installed only to read from your webcam.
-# OpenCV is *not* required to use the face_recognition library. It's only required if you want to run this
-# specific demo. If you have trouble installing it, try any of the other demos that don't require it instead.
-
-camera = PiCamera()
-camera.resolution = (1024, 768)
-camera.start_preview()
-
-# Camera warm-up time
-start_time = get_time()
-while get_time() < start_time + 2:
-    pass
-camera.capture('foo.jpg')
-
-# Load a sample picture and learn how to recognize it.
-obama_image = face_recognition.load_image_file(f"img{FILE_SEPARATOR}obama.jpg")
-obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
-
-# Load a second sample picture and learn how to recognize it.
-biden_image = face_recognition.load_image_file(f"img{FILE_SEPARATOR}biden.jpg")
-biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
-
-# Create arrays of known face encodings and their names
-known_face_encodings = [
-    obama_face_encoding,
-    biden_face_encoding
-]
-known_face_names = [
-    "Barack Obama",
-    "Joe Biden"
-]
-
-def argmin(arr):
-    lowest = arr[0]
-    idx = 0
-    for i in range(1, len(arr)):
-        if arr[i] < lowest:
-            lowest = arr[i]
-            idx = i
-    return idx
-
-# Initialize some variables
-face_locations = []
-face_encodings = []
-face_names = []
-process_this_frame = True
-
-
+# returns file name
+def save_picture():
+    dt = datetime.now()
+    file_name = dt[0:4]+dt[5:7]+dt[8:10]+dt[11:13]+dt[14:16]+dt[17:19]
+    call(["fswebcam", "-d", "/dev/video0", "-r", RESOLUTION, "--no-banner", f"{IMG_DIR}{file_name}.{IMG_FORMAT}"]) 
+    return file_name
 
 '''
-while True:
-    # Grab a single frame of video
-    frame = camera.capture()
-
-    # Resize frame of video to 1/4 size for faster face recognition processing
-    small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-
-    # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
-    rgb_small_frame = small_frame[:, :, ::-1]
-
-    # Only process every other frame of video to save time
-    if process_this_frame:
-        # Find all the faces and face encodings in the current frame of video
-        face_locations = face_recognition.face_locations(rgb_small_frame)
-        face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
-
-        face_names = []
-        for face_encoding in face_encodings:
-            # See if the face is a match for the known face(s)
-            matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-            name = "Face"
-
-            # # If a match was found in known_face_encodings, just use the first one.
-            # if True in matches:
-            #     first_match_index = matches.index(True)
-            #     name = known_face_names[first_match_index]
-
-            # Or instead, use the known face with the smallest distance to the new face
-            face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-            best_match_index = argmin(face_distances)
-            if matches[best_match_index]:
-                name = known_face_names[best_match_index]
-
-            face_names.append(name)
-
-    process_this_frame = not process_this_frame
-
-
-    # Display the results
-    for (top, right, bottom, left), name in zip(face_locations, face_names):
-        # Scale back up face locations since the frame we detected in was scaled to 1/4 size
-        top *= 4
-        right *= 4
-        bottom *= 4
-        left *= 4
-
-        # Draw a box around the face
-        cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-
-        # Draw a label with a name below the face
-        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-        font = cv2.FONT_HERSHEY_DUPLEX
-        cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-
-    # Display the resulting image
-    cv2.imshow('Video', frame)
-
-    # Hit 'q' on the keyboard to quit!
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-# Release handle to the webcam
-video_capture.release()
-cv2.destroyAllWindows()
+previously had processing minimizations with:
+- quarter by quarter video resolution using cv2
+- processing every other frame
 '''
+
+if __name__ == "__main__":
+    face_locations = []
+    face_encodings = []
+    face_names = []
+
+    # load actual target image
+    target_img = frec.load_image_file( TARGET_IMG_PATH )
+    target_encoding = frec.face_encodings( target_img )[0]
+
+    while True:
+        # take picture, save name
+        file_name = save_picture()
+        img = frec.load_image_file( file_name )
+
+        # load encodings from face_recognition library
+        face_locations = frec.face_locations( img )
+        encodings = frec.face_encodings( img, face_locations )
+
+        # compare faces in picture to target image
+        min_dist = THRESHOLD # need to beat threshold distance
+        match_idx = -1
+        for idx in range(len(encodings)):
+            enc_dist = np.linalg.norm(encodings[idx]-target_encoding)
+            if enc_dist < min_dist:
+                min_dist = enc_dist
+                match_idx = idx
+        
+        # display
+        for idx, (top, right, bottom, left) in enumerate(face_locations):
+            # face box
+            cv2.rectangle(img, (left, top), (right, bottom), (0, 0, 255), 2)
+            
+            # text box
+            label = "MATCH" if idx == match_idx else "UNKNOWN"
+            cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+            font = cv2.FONT_HERSHEY_DUPLEX
+            cv2.putText(img, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+
+        cv2.imshow('Video', frame)
+
+        # press q to quit
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    # close windows
+    cv2.destroyAllWindows()
+    

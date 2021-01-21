@@ -1,7 +1,7 @@
 import face_recognition as frec
 from pathlib import Path
 
-IMG_FOLDER = Path("img") / "lfw"
+IMG_FOLDER = Path("sample_img") / "lfw"
 ENC_FOLDER = Path("enc")
 
 def get_enc_path_dir(img_path):
