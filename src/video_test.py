@@ -62,9 +62,9 @@ if __name__ == "__main__":
             label = "MATCH" if idx == match_idx else "UNKNOWN"
             cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
             font = cv2.FONT_HERSHEY_DUPLEX
-            cv2.putText(img, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+            cv2.putText(img, label, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
-        cv2.imshow('Video', frame)
+        cv2.imshow('Video', img)
 
         # press q to quit
         if cv2.waitKey(1) & 0xFF == ord('q'):
