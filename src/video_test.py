@@ -51,10 +51,13 @@ if __name__ == "__main__":
             # take picture, save name
             path = save_picture()
             img = frec.load_image_file( path )
+            print(img)
 
             # load encodings from face_recognition library
             face_locations = frec.face_locations( img )
+            print(f"# face_locs={len(face_locations)}")
             encodings = frec.face_encodings( img, face_locations )
+            print(f"# encs={len(encodings)}")
 
             # compare faces in picture to target image
             min_dist = THRESHOLD # need to beat threshold distance
@@ -64,9 +67,11 @@ if __name__ == "__main__":
                 if enc_dist < min_dist:
                     min_dist = enc_dist
                     match_idx = idx
+            print(match_idx)
             
             # display
             for idx, (top, right, bottom, left) in enumerate(face_locations):
+                print(f"loop {idx}")
                 # face box
                 cv2.rectangle(img, (left, top), (right, bottom), (0, 0, 255), 2)
                 
