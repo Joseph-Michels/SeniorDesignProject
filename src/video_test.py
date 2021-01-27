@@ -52,7 +52,7 @@ if __name__ == "__main__":
     last_time = get_time()
     while True:
         this_time = get_time()
-        if this_time < last_time + 1:
+        if this_time > last_time + 1:
             # take picture, save name
             print("before saving picture")
             path = save_picture()
