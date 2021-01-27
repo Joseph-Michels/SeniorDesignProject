@@ -36,7 +36,9 @@ previously had processing minimizations with:
 - processing every other frame
 '''
 
+print("before main")
 if __name__ == "__main__":
+    print("main")
     face_locations = []
     face_encodings = []
     face_names = []
@@ -44,6 +46,7 @@ if __name__ == "__main__":
     # load actual target image
     target_img = frec.load_image_file( TARGET_IMG_PATH )
     target_encoding = frec.face_encodings( target_img )[0]
+    print("target", target_encoding)
 
     print("before loop")
     last_time = get_time()
