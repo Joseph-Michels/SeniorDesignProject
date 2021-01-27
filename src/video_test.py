@@ -26,6 +26,7 @@ THRESHOLD = 0.7
 def save_picture():
     dt = datetime.now()
     path = f"{IMG_DIR}{dt[0:4]+dt[5:7]+dt[8:10]+dt[11:13]+dt[14:16]+dt[17:19]}.{IMG_FORMAT}"
+    print(path)
     CAMERA.capture(path)
     return path
 
