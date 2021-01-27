@@ -44,11 +44,13 @@ if __name__ == "__main__":
     target_img = frec.load_image_file( TARGET_IMG_PATH )
     target_encoding = frec.face_encodings( target_img )[0]
 
+    print("before loop")
     last_time = get_time()
     while True:
         this_time = get_time()
         if this_time < last_time + 1:
             # take picture, save name
+            print("before saving picture")
             path = save_picture()
             img = frec.load_image_file( path )
             print(img)
