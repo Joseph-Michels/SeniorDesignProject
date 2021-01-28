@@ -44,7 +44,9 @@ if __name__ == "__main__":
     # load actual target image
     target_img = frec.load_image_file( TARGET_IMG_PATH )
     print(len(target_img))
-    target_encoding = frec.face_encodings( target_img )[0]
+    target_locs = frec.face_locations( target_img )
+    print(len(target_locs))
+    target_encoding = frec.face_encodings( target_img, target_locs )[0]
     print(len(target_encoding))
     print("target", target_encoding)
 
