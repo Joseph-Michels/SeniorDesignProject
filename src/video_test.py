@@ -1,4 +1,5 @@
 import face_recognition as frec
+import dlib
 import cv2
 import numpy as np
 from datetime import datetime
@@ -8,6 +9,8 @@ from time import time as get_time
 CAMERA = PiCamera()
 CAMERA.resolution = (1024, 768)
 CAMERA.start_preview()
+
+FACE_DETECTOR = dlib.get_frontal_face_detector()
 
 # Camera warm-up time
 start_time = get_time()
@@ -30,6 +33,30 @@ def save_picture():
     CAMERA.capture(path)
     return path
 
+def _raw_face_locations(img, number_of_times_to_upsample=1):
+    """
+    Returns an array of bounding boxes of human faces in a image
+    :param img: An image (as a numpy array)
+    :param number_of_times_to_upsample: How many times to upsample the image looking for faces. Higher numbers find smaller faces.
+    :return: A list of dlib 'rect' objects of found face locations
+    """
+    return FACE_DETECTOR(img, number_of_times_to_upsample)
+
+
+def face_locations(img, number_of_times_to_upsample=1, model="hog"):
+    """
+    Returns an array of bounding boxes of human faces in a image
+    :param img: An image (as a numpy array)
+    :param number_of_times_to_upsample: How many times to upsample the image looking for faces. Higher numbers find smaller faces.
+    :param model: Which face detection model to use. "hog" is less accurate but faster on CPUs. "cnn" is a more accurate
+                  deep-learning model which is GPU/CUDA accelerated (if available). The default is "hog".
+    :return: A list of tuples of found face locations in css (top, right, bottom, left) order
+    """
+    if model == "cnn":
+        return [_trim_css_to_bounds(_rect_to_css(face.rect), img.shape) for face in _raw_face_locations(img, number_of_times_to_upsample, "cnn")]
+    else:
+        return [_trim_css_to_bounds(_rect_to_css(face), img.shape) for face in _raw_face_locations(img, number_of_times_to_upsample, model)]
+
 '''
 previously had processing minimizations with:
 - quarter by quarter video resolution using cv2
@@ -43,60 +70,62 @@ if __name__ == "__main__":
 
     # load actual target image
     target_img = frec.load_image_file( TARGET_IMG_PATH )
-    print(len(target_img))
-    target_locs = frec.face_locations( target_img )
-    print(len(target_locs))
-    target_encoding = frec.face_encodings( target_img, target_locs )[0]
-    print(len(target_encoding))
-    print("target", target_encoding)
 
-    print("before loop")
-    last_time = get_time()
-    while True:
-        this_time = get_time()
-        if this_time > last_time + 1:
-            # take picture, save name
-            print("before saving picture")
-            path = save_picture()
-            img = frec.load_image_file( path )
-            print(img)
+    target_encs = frec.face_encodings( target_img )
 
-            # load encodings from face_recognition library
-            face_locations = frec.face_locations( img )
-            print(f"# face_locs={len(face_locations)}")
-            encodings = frec.face_encodings( img, face_locations )
-            print(f"# encs={len(encodings)}")
+    if len(target_encs) == 1:
+        target_encoding = target_encs[0]
+        print("target", target_encoding)
 
-            # compare faces in picture to target image
-            min_dist = THRESHOLD # need to beat threshold distance
-            match_idx = -1
-            for idx in range(len(encodings)):
-                enc_dist = np.linalg.norm(encodings[idx]-target_encoding)
-                if enc_dist < min_dist:
-                    min_dist = enc_dist
-                    match_idx = idx
-            print(match_idx)
-            
-            # display
-            for idx, (top, right, bottom, left) in enumerate(face_locations):
-                print(f"loop {idx}")
-                # face box
-                cv2.rectangle(img, (left, top), (right, bottom), (0, 0, 255), 2)
+        print("before loop")
+        last_time = get_time()
+        while True:
+            this_time = get_time()
+            if this_time > last_time + 1:
+                # take picture, save name
+                print("before saving picture")
+                path = save_picture()
+                img = frec.load_image_file( path )
+                print(img)
+
+                # load encodings from face_recognition library
+                face_locations = frec.face_locations( img )
+                print(f"# face_locs={len(face_locations)}")
+                encodings = frec.face_encodings( img, face_locations )
+                print(f"# encs={len(encodings)}")
+
+                # compare faces in picture to target image
+                min_dist = THRESHOLD # need to beat threshold distance
+                match_idx = -1
+                for idx in range(len(encodings)):
+                    enc_dist = np.linalg.norm(encodings[idx]-target_encoding)
+                    if enc_dist < min_dist:
+                        min_dist = enc_dist
+                        match_idx = idx
+                print(match_idx)
                 
-                # text box
-                label = "MATCH" if idx == match_idx else "UNKNOWN"
-                cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-                font = cv2.FONT_HERSHEY_DUPLEX
-                cv2.putText(img, label, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+                # display
+                for idx, (top, right, bottom, left) in enumerate(face_locations):
+                    print(f"loop {idx}")
+                    # face box
+                    cv2.rectangle(img, (left, top), (right, bottom), (0, 0, 255), 2)
+                    
+                    # text box
+                    label = "MATCH" if idx == match_idx else "UNKNOWN"
+                    cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+                    font = cv2.FONT_HERSHEY_DUPLEX
+                    cv2.putText(img, label, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
-            cv2.imshow('Video', img)
+                cv2.imshow('Video', img)
 
-            # press q to quit
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+                # press q to quit
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
 
-            last_time = this_time
+                last_time = this_time
 
-    # close windows
-    cv2.destroyAllWindows()
+        # close windows
+        cv2.destroyAllWindows()
+    else:
+        print(f"target image has {len(target_encs)} faces")
     
