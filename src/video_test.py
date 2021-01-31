@@ -20,6 +20,7 @@ while get_time() < start_time + 2: # 2 secs
 FILE_SEP = "/"
 TARGET_IMG_PATH = "target.jpg"
 IMG_FOLDER = "img"
+OUT_PREFIX = "out_"
 IMG_DIR = f".{FILE_SEP}{IMG_FOLDER}{FILE_SEP}"
 IMG_FORMAT = "jpg"
 
@@ -27,35 +28,11 @@ THRESHOLD = 0.7
 
 # returns path
 def save_picture():
-    dt = datetime.now()
+    dt = str(datetime.now())
     path = f"{IMG_DIR}{dt[0:4]+dt[5:7]+dt[8:10]+dt[11:13]+dt[14:16]+dt[17:19]}.{IMG_FORMAT}"
-    print(path)
     CAMERA.capture(path)
+    print(f"path")
     return path
-
-def _raw_face_locations(img, number_of_times_to_upsample=1):
-    """
-    Returns an array of bounding boxes of human faces in a image
-    :param img: An image (as a numpy array)
-    :param number_of_times_to_upsample: How many times to upsample the image looking for faces. Higher numbers find smaller faces.
-    :return: A list of dlib 'rect' objects of found face locations
-    """
-    return FACE_DETECTOR(img, number_of_times_to_upsample)
-
-
-def face_locations(img, number_of_times_to_upsample=1, model="hog"):
-    """
-    Returns an array of bounding boxes of human faces in a image
-    :param img: An image (as a numpy array)
-    :param number_of_times_to_upsample: How many times to upsample the image looking for faces. Higher numbers find smaller faces.
-    :param model: Which face detection model to use. "hog" is less accurate but faster on CPUs. "cnn" is a more accurate
-                  deep-learning model which is GPU/CUDA accelerated (if available). The default is "hog".
-    :return: A list of tuples of found face locations in css (top, right, bottom, left) order
-    """
-    if model == "cnn":
-        return [_trim_css_to_bounds(_rect_to_css(face.rect), img.shape) for face in _raw_face_locations(img, number_of_times_to_upsample, "cnn")]
-    else:
-        return [_trim_css_to_bounds(_rect_to_css(face), img.shape) for face in _raw_face_locations(img, number_of_times_to_upsample, model)]
 
 '''
 previously had processing minimizations with:
@@ -75,7 +52,7 @@ if __name__ == "__main__":
 
     if len(target_encs) == 1:
         target_encoding = target_encs[0]
-        print("target", target_encoding)
+        print(f"target encoding has length {len(target_encoding)}")
 
         print("before loop")
         last_time = get_time()
@@ -83,28 +60,27 @@ if __name__ == "__main__":
             this_time = get_time()
             if this_time > last_time + 1:
                 # take picture, save name
-                print("before saving picture")
+                print("\nsaving picture to ", end='')
                 path = save_picture()
                 img = frec.load_image_file( path )
-                print(img)
 
                 # load encodings from face_recognition library
                 face_locations = frec.face_locations( img )
-                print(f"# face_locs={len(face_locations)}")
                 encodings = frec.face_encodings( img, face_locations )
-                print(f"# encs={len(encodings)}")
+                print(f"len = {len(face_locations)}, {len(encodings)}")
 
                 # compare faces in picture to target image
                 min_dist = THRESHOLD # need to beat threshold distance
                 match_idx = -1
                 for idx in range(len(encodings)):
                     enc_dist = np.linalg.norm(encodings[idx]-target_encoding)
+                    print(f"\tdist[{idx}]={enc_dist}")
                     if enc_dist < min_dist:
                         min_dist = enc_dist
                         match_idx = idx
-                print(match_idx)
+                print(f" match_idx {match_idx}")
                 
-                # display
+                # boxes
                 for idx, (top, right, bottom, left) in enumerate(face_locations):
                     print(f"loop {idx}")
                     # face box
@@ -116,7 +92,8 @@ if __name__ == "__main__":
                     font = cv2.FONT_HERSHEY_DUPLEX
                     cv2.putText(img, label, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
-                cv2.imshow('Video', img)
+                # save image
+                cv2.imwrite(OUT_PREFIX+path, img)
 
                 # press q to quit
                 if cv2.waitKey(1) & 0xFF == ord('q'):
