@@ -17,6 +17,7 @@ start_time = get_time()
 while get_time() < start_time + 2: # 2 secs
     pass
 
+FONT = cv2.FONT_HERSHEY_DUPLEX
 FILE_SEP = "/"
 TARGET_IMG_PATH = "target.jpg"
 IMG_FOLDER = "img"
@@ -82,15 +83,13 @@ if __name__ == "__main__":
                 
                 # boxes
                 for idx, (top, right, bottom, left) in enumerate(face_locations):
-                    print(f"loop {idx}")
                     # face box
-                    cv2.rectangle(img, (left, top), (right, bottom), (0, 0, 255), 2)
+                    img = cv2.rectangle(img, (left, top), (right, bottom), (0, 0, 255), 2)
                     
                     # text box
                     label = "MATCH" if idx == match_idx else "UNKNOWN"
-                    cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-                    font = cv2.FONT_HERSHEY_DUPLEX
-                    cv2.putText(img, label, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+                    img = cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+                    img = cv2.putText(img, label, (left + 6, bottom - 6), FONT, 1.0, (255, 255, 255), 1)
 
                 # save image
                 cv2.imwrite(OUT_PREFIX+path, img)
