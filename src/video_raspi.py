@@ -6,17 +6,6 @@ from datetime import datetime
 from picamera import PiCamera
 from time import time as get_time
 
-CAMERA = PiCamera()
-CAMERA.resolution = (1024, 768)
-CAMERA.start_preview()
-
-FACE_DETECTOR = dlib.get_frontal_face_detector()
-
-# Camera warm-up time
-start_time = get_time()
-while get_time() < start_time + 2: # 2 secs
-    pass
-
 FONT = cv2.FONT_HERSHEY_DUPLEX
 FILE_SEP = "/"
 TARGET_IMG_PATH = "target.jpg"
@@ -26,6 +15,12 @@ IMG_DIR = f"{IMG_FOLDER}{FILE_SEP}" # f".{FILE_SEP}{IMG_FOLDER}{FILE_SEP}"
 IMG_FORMAT = "jpg"
 
 THRESHOLD = 0.7
+
+CAMERA = PiCamera()
+CAMERA.resolution = (1024, 768)
+CAMERA.start_preview()
+
+FACE_DETECTOR = dlib.get_frontal_face_detector()
 
 # returns path
 def save_picture():
@@ -42,6 +37,11 @@ previously had processing minimizations with:
 '''
 
 if __name__ == "__main__":
+    # camera warm-up time
+    start_time = get_time()
+    while get_time() < start_time + 2: # 2 secs
+        pass
+
     face_locations = []
     face_encodings = []
     face_names = []
