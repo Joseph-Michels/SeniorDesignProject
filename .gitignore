@@ -1,6 +1,7 @@
 # Big Folders
 /sample_img/lfw
 /enc
+/mavlink
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
