@@ -1,0 +1,18 @@
+
+https://oscarliang.com/quadcopter-pid-explained-tuning/
+https://en.wikipedia.org/wiki/PID_controller#/media/File:PID_Compensation_Animated.gif
+
+Drone reacts slowly and hovers bad or unstable (eg dances, wobbles)
+Increase P-value and decrease D value. Maybe decrease I value. The P value must in no case be higher than the above-determined threshold.
+
+During hover the drone drifts
+Increase the I term and possibly P-value.
+
+Oscillation during fast flights
+I-value too high or too low - depending on the drone.
+
+Drone oscillates slightly with disturbances (eg nudge or gust of wind)
+D value down
+
+Drone reacts too slowly to disturbances (eg nudge or gust of wind)
+Increase D-value and possibly P-value.
