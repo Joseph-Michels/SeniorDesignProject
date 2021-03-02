@@ -130,6 +130,7 @@ if __name__ == "__main__":
             loc = float(line[:line.find(' ')]) # loc ranges from -1 to 1
             condition_yaw(MAX_TURN*loc, relative=True)
             send_ned_velocity(1,0,0,1)
+            print(loc)
 
 
     ### Land
