@@ -125,10 +125,13 @@ if __name__ == "__main__":
 
 
     ### Face Rec to Flight
+    yaw = 0
+    condition_yaw(yaw)
     with open("out/test.txt", 'r') as rf:
         for line in rf:
             loc = float(line[:line.find(' ')]) # loc ranges from -1 to 1
-            condition_yaw(MAX_TURN*loc, relative=True)
+            yaw += MAX_TURN*loc
+            condition_yaw(yaw)
             send_ned_velocity(0,1,0,1)
             print(loc)
 
