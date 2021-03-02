@@ -95,7 +95,7 @@ def send_ned_velocity(velocity_x, velocity_y, velocity_z, duration):
         vehicle.send_mavlink(msg)
         time.sleep(1)
 
-MAX_TURN = 10
+MAX_TURN = 50
 
 if __name__ == "__main__":
     import argparse  
@@ -131,6 +131,7 @@ if __name__ == "__main__":
         for line in rf:
             loc = float(line[:line.find(' ')]) # loc ranges from -1 to 1
             yaw += MAX_TURN*loc
+            yaw = 360+yaw if yaw < 0 else yaw
             condition_yaw(yaw)
             send_ned_velocity(0,1,0,1)
             print(loc)
