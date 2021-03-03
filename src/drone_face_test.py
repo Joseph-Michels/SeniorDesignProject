@@ -141,11 +141,12 @@ def goto(vehicle, dNorth, dEast):
     targetLocation = get_location_metres(currentLocation, dNorth, dEast)
 
     targetDistance = get_distance_metres(currentLocation, targetLocation)
-    vehicle.simple_goto(targetLocation)
     
     print "DEBUG: currentLocation: %s" % currentLocation
     print "DEBUG: targetLocation: %s" % targetLocation
     print "DEBUG: targetDistance: %s" % targetDistance
+
+    vehicle.simple_goto(targetLocation)
 
     while vehicle.mode.name=="GUIDED": #Stop action if we are no longer in guided mode.
         #print "DEBUG: mode: %s" % vehicle.mode.name
@@ -156,7 +157,7 @@ def goto(vehicle, dNorth, dEast):
             break
         time.sleep(2)
 
-MAX_TURN = 50
+MAX_TURN = 5
 
 if __name__ == "__main__":
     import argparse  
