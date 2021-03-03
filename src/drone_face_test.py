@@ -157,7 +157,7 @@ def goto(vehicle, dNorth, dEast):
             break
         time.sleep(2)
 
-MAX_TURN = 5
+MAX_TURN = 10
 
 if __name__ == "__main__":
     import argparse  

@@ -14,7 +14,7 @@ if __name__ == "__main__":
     process_this_frame = True
 
     rf = open("out/"+input("file name: "), 'w')
-    rf.write(f"{IMG_WIDTH}\n")
+    # rf.write(f"{IMG_WIDTH}\n")
 
     while True:
         # Grab a single frame of video
