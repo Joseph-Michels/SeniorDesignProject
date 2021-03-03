@@ -139,11 +139,13 @@ def goto(vehicle, dNorth, dEast):
     
     currentLocation = vehicle.location.global_relative_frame
     targetLocation = get_location_metres(currentLocation, dNorth, dEast)
+
     targetDistance = get_distance_metres(currentLocation, targetLocation)
     vehicle.simple_goto(targetLocation)
     
-    #print "DEBUG: targetLocation: %s" % targetLocation
-    #print "DEBUG: targetLocation: %s" % targetDistance
+    print "DEBUG: currentLocation: %s" % currentLocation
+    print "DEBUG: targetLocation: %s" % targetLocation
+    print "DEBUG: targetDistance: %s" % targetDistance
 
     while vehicle.mode.name=="GUIDED": #Stop action if we are no longer in guided mode.
         #print "DEBUG: mode: %s" % vehicle.mode.name
@@ -193,9 +195,10 @@ if __name__ == "__main__":
             #yaw = 360+yaw if yaw < 0 else yaw
             #condition_yaw(yaw)
             #send_ned_velocity(0,1,0,1)
+            print("img:"+str(loc))
             goto(vehicle, 2, MAX_TURN*loc)
 
-            print(loc)
+            
 
 
     ### Land
