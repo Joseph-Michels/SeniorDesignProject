@@ -128,7 +128,7 @@ def get_distance_metres(aLocation1, aLocation2):
     return math.sqrt((dlat*dlat) + (dlong*dlong)) * 1.113195e5
 
 
-def goto(dNorth, dEast, gotoFunction=vehicle.simple_goto):
+def goto(vehicle, dNorth, dEast):
     """
     Moves the vehicle to a position dNorth metres North and dEast metres East of the current position.
     The method takes a function pointer argument with a single `dronekit.lib.LocationGlobal` parameter for 
@@ -140,7 +140,7 @@ def goto(dNorth, dEast, gotoFunction=vehicle.simple_goto):
     currentLocation = vehicle.location.global_relative_frame
     targetLocation = get_location_metres(currentLocation, dNorth, dEast)
     targetDistance = get_distance_metres(currentLocation, targetLocation)
-    gotoFunction(targetLocation)
+    vehicle.simple_goto(targetLocation)
     
     #print "DEBUG: targetLocation: %s" % targetLocation
     #print "DEBUG: targetLocation: %s" % targetDistance
@@ -193,7 +193,7 @@ if __name__ == "__main__":
             #yaw = 360+yaw if yaw < 0 else yaw
             #condition_yaw(yaw)
             #send_ned_velocity(0,1,0,1)
-            goto(2, MAX_TURN*loc)
+            goto(vehicle, 2, MAX_TURN*loc)
 
             print(loc)
 
