@@ -197,7 +197,7 @@ if __name__ == "__main__":
             #condition_yaw(yaw)
             #send_ned_velocity(0,1,0,1)
             print("img:"+str(loc))
-            goto(vehicle, 2, MAX_TURN*loc)
+            goto(vehicle, MAX_TURN/2.0, MAX_TURN*loc)
 
             
 
