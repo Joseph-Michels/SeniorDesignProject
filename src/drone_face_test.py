@@ -142,9 +142,9 @@ def goto(vehicle, dNorth, dEast):
 
     targetDistance = get_distance_metres(currentLocation, targetLocation)
     
-    print "DEBUG: currentLocation: %s" % currentLocation
-    print "DEBUG: targetLocation: %s" % targetLocation
-    print "DEBUG: targetDistance: %s" % targetDistance
+    #print "DEBUG: currentLocation: %s" % currentLocation
+    #print "DEBUG: targetLocation: %s" % targetLocation
+    #print "DEBUG: targetDistance: %s" % targetDistance
 
     vehicle.simple_goto(targetLocation)
 
