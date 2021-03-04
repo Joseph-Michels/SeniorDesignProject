@@ -124,7 +124,7 @@ def send_ned_velocity(velocity_x, velocity_y, velocity_z, duration):
         time.sleep(2)
 
 MAX_TURN = 10
-SPEED = 2
+SPEED = 3
 DEG_TO_RAD = PI/180
 
 if __name__ == "__main__":
@@ -163,7 +163,7 @@ if __name__ == "__main__":
             print("img:"+str(loc))
             yaw += MAX_TURN*loc
             condition_yaw(yaw)
-            send_ned_velocity(cos(yaw*DEG_TO_RAD), sin(yaw*DEG_TO_RAD), 0, 1)
+            send_ned_velocity(SPEED*cos(yaw*DEG_TO_RAD), SPEED*sin(yaw*DEG_TO_RAD), 0, 1)
 
 
 
