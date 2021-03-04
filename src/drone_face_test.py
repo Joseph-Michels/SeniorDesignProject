@@ -163,9 +163,8 @@ if __name__ == "__main__":
             print("img:"+str(loc))
             yaw += MAX_TURN*loc
             condition_yaw(yaw)
-            send_ned_velocity(sin(yaw*DEG_TO_RAD), cos(yaw*DEG_TO_RAD), 0, 1)
+            send_ned_velocity(cos(yaw*DEG_TO_RAD), sin(yaw*DEG_TO_RAD), 0, 1)
 
-            
 
 
     ### Land
