@@ -95,9 +95,9 @@ def send_ned_velocity(velocity_x, velocity_y, velocity_z, duration):
         vehicle.send_mavlink(msg)
         time.sleep(1)
 
-
+INIT_HEIGHT = 2.5
 MAX_TURN = 10
-SPEED = 10 # should be 2
+SPEED = 2
 DEG_TO_RAD = PI/180
 
 if __name__ == "__main__":
@@ -124,7 +124,7 @@ if __name__ == "__main__":
 
 
     ### Arm and take off
-    arm_and_takeoff(5)
+    arm_and_takeoff(INIT_HEIGHT)
 
 
     ### Face Rec to Flight
