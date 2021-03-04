@@ -1,5 +1,4 @@
 import face_recognition as frec
-import dlib
 import cv2
 import numpy as np
 from datetime import datetime
@@ -19,8 +18,6 @@ THRESHOLD = 0.7
 CAMERA = PiCamera()
 CAMERA.resolution = (1024, 768)
 CAMERA.start_preview()
-
-FACE_DETECTOR = dlib.get_frontal_face_detector()
 
 # returns path
 def save_picture():

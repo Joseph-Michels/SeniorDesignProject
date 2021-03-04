@@ -1,0 +1,5 @@
+RUN CAMERA CAPTURE / FACE REC SOFTWARE
+    python3 src/video_raspi_drone.py
+
+RUN DRONE SOFTWARE
+    python2 src/drone_to_face.py
