@@ -124,7 +124,7 @@ def send_ned_velocity(velocity_x, velocity_y, velocity_z, duration):
         time.sleep(2)
 
 MAX_TURN = 10
-SPEED = 3
+SPEED = 10 # should be 2
 DEG_TO_RAD = PI/180
 
 if __name__ == "__main__":
