@@ -158,20 +158,20 @@ if __name__ == "__main__":
 
     ### Flight
     condition_yaw(0)
-    send_global_velocity(-2,0,0,5) # SOUTH ?
-    send_global_velocity(0,0,0,1)
+    send_ned_velocity(-2,0,0,5) # SOUTH ?
+    send_ned_velocity(0,0,0,1)
 
     condition_yaw(90)
-    send_global_velocity(-2,0,0,5) # SOUTH ?
-    send_global_velocity(0,0,0,1)
+    send_ned_velocity(-2,0,0,5) # SOUTH ?
+    send_ned_velocity(0,0,0,1)
 
     condition_yaw(0)
-    send_global_velocity(0,-2,0,5) # WEST ?
-    send_global_velocity(0,0,0,1)
+    send_ned_velocity(0,-2,0,5) # WEST ?
+    send_ned_velocity(0,0,0,1)
 
     condition_yaw(90)
-    send_global_velocity(0,-2,0,5) # WEST ?
-    send_global_velocity(0,0,0,1)
+    send_ned_velocity(0,-2,0,5) # WEST ?
+    send_ned_velocity(0,0,0,1)
 
             
 

@@ -1,7 +1,7 @@
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 from pymavlink import mavutil # Needed for command message definitions
 import time
-import math
+from math import sin,cos,pi as PI
 
 def condition_yaw(heading, relative=False):
     """
@@ -95,40 +95,6 @@ def send_ned_velocity(velocity_x, velocity_y, velocity_z, duration):
         vehicle.send_mavlink(msg)
         time.sleep(1)
 
-def get_location_metres(original_location, dNorth, dEast):
-    """
-    Returns a LocationGlobal object containing the latitude/longitude `dNorth` and `dEast` metres from the 
-    specified `original_location`. The returned Location has the same `alt` value
-    as `original_location`.
-    The function is useful when you want to move the vehicle around specifying locations relative to 
-    the current vehicle position.
-    The algorithm is relatively accurate over small distances (10m within 1km) except close to the poles.
-    For more information see:
-    http://gis.stackexchange.com/questions/2951/algorithm-for-offsetting-a-latitude-longitude-by-some-amount-of-meters
-    """
-    earth_radius=6378137.0 #Radius of "spherical" earth
-    #Coordinate offsets in radians
-    dLat = dNorth/earth_radius
-    dLon = dEast/(earth_radius*math.cos(math.pi*original_location.lat/180))
-
-    #New position in decimal degrees
-    newlat = original_location.lat + (dLat * 180/math.pi)
-    newlon = original_location.lon + (dLon * 180/math.pi)
-    return LocationGlobal(newlat, newlon,original_location.alt)
-
-def get_distance_metres(aLocation1, aLocation2):
-    """
-    Returns the ground distance in metres between two LocationGlobal objects.
-    This method is an approximation, and will not be accurate over large distances and close to the 
-    earth's poles. It comes from the ArduPilot test code: 
-    https://github.com/diydrones/ardupilot/blob/master/Tools/autotest/common.py
-    """
-    dlat = aLocation2.lat - aLocation1.lat
-    dlong = aLocation2.lon - aLocation1.lon
-    return math.sqrt((dlat*dlat) + (dlong*dlong)) * 1.113195e5
-
-
-def goto(vehicle, dNorth, dEast):
     """
     Moves the vehicle to a position dNorth metres North and dEast metres East of the current position.
     The method takes a function pointer argument with a single `dronekit.lib.LocationGlobal` parameter for 
@@ -157,7 +123,9 @@ def goto(vehicle, dNorth, dEast):
             break
         time.sleep(2)
 
-MAX_TURN = 100
+MAX_TURN = 10
+SPEED = 2
+DEG_TO_RAD = PI/180
 
 if __name__ == "__main__":
     import argparse  
@@ -183,7 +151,7 @@ if __name__ == "__main__":
 
 
     ### Arm and take off
-    arm_and_takeoff(3)
+    arm_and_takeoff(5)
 
 
     ### Face Rec to Flight
@@ -192,12 +160,10 @@ if __name__ == "__main__":
     with open("out/test.txt", 'r') as rf:
         for line in rf:
             loc = float(line[:line.find(' ')]) # loc ranges from -1 to 1
-            #yaw += MAX_TURN*loc
-            #yaw = 360+yaw if yaw < 0 else yaw
-            #condition_yaw(yaw)
-            #send_ned_velocity(0,1,0,1)
             print("img:"+str(loc))
-            goto(vehicle, MAX_TURN/2.0, MAX_TURN*loc)
+            yaw += MAX_TURN*loc
+            condition_yaw(yaw)
+            send_ned_velocity(sin(yaw*DEG_TO_RAD), cos(yaw*DEG_TO_RAD), 0, 1)
 
             
 
