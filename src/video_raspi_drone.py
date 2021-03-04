@@ -35,7 +35,7 @@ if __name__ == "__main__":
         exit()
     target_encoding = target_encs[0]
 
-    while True: # sleeps for 1s at bottom of loop
+    while True: # sleeps for .2s at bottom of loop
 
         # Image Capture and Analysis
         camera.capture(OUT_IMG_PATH)
@@ -67,4 +67,4 @@ if __name__ == "__main__":
                 write_reading(f"N 0")
 
         print("")
-        time_sleep(1)
+        time_sleep(.2)
