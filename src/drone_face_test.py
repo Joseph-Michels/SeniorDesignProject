@@ -95,33 +95,6 @@ def send_ned_velocity(velocity_x, velocity_y, velocity_z, duration):
         vehicle.send_mavlink(msg)
         time.sleep(1)
 
-    """
-    Moves the vehicle to a position dNorth metres North and dEast metres East of the current position.
-    The method takes a function pointer argument with a single `dronekit.lib.LocationGlobal` parameter for 
-    the target position. This allows it to be called with different position-setting commands. 
-    By default it uses the standard method: dronekit.lib.Vehicle.simple_goto().
-    The method reports the distance to target every two seconds.
-    """
-    
-    currentLocation = vehicle.location.global_relative_frame
-    targetLocation = get_location_metres(currentLocation, dNorth, dEast)
-
-    targetDistance = get_distance_metres(currentLocation, targetLocation)
-    
-    #print "DEBUG: currentLocation: %s" % currentLocation
-    #print "DEBUG: targetLocation: %s" % targetLocation
-    #print "DEBUG: targetDistance: %s" % targetDistance
-
-    vehicle.simple_goto(targetLocation)
-
-    while vehicle.mode.name=="GUIDED": #Stop action if we are no longer in guided mode.
-        #print "DEBUG: mode: %s" % vehicle.mode.name
-        remainingDistance=get_distance_metres(vehicle.location.global_relative_frame, targetLocation)
-        print("  Distance to target: ", remainingDistance)
-        if remainingDistance<=targetDistance*0.01: #Just below target, in case of undershoot.
-            print("  Reached target")
-            break
-        time.sleep(2)
 
 MAX_TURN = 10
 SPEED = 10 # should be 2
@@ -164,7 +137,7 @@ if __name__ == "__main__":
             yaw += MAX_TURN*loc
             yaw = yaw+360 if yaw < 0 else yaw
             condition_yaw(yaw)
-            send_ned_velocity(SPEED*cos(yaw*DEG_TO_RAD), SPEED*sin(yaw*DEG_TO_RAD), 0, 1)
+            send_ned_velocity(SPEED*cos(yaw*DEG_TO_RAD), SPEED*sin(yaw*DEG_TO_RAD), 0, 5)
 
 
 
