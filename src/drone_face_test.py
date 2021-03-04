@@ -137,7 +137,7 @@ if __name__ == "__main__":
             yaw += MAX_TURN*loc
             yaw = yaw+360 if yaw < 0 else yaw
             condition_yaw(yaw)
-            send_ned_velocity(SPEED*cos(yaw*DEG_TO_RAD), SPEED*sin(yaw*DEG_TO_RAD), 0, 5)
+            send_ned_velocity(SPEED*cos(yaw*DEG_TO_RAD), SPEED*sin(yaw*DEG_TO_RAD), 0, 1)
 
 
 
