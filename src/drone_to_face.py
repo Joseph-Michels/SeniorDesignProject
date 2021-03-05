@@ -155,14 +155,17 @@ if __name__ == "__main__":
 
     while True:
         match, location = get_reading()
+        print("")
 
         if match=='Y':
             # fly towards location if face match found
             yaw = bound_yaw(yaw + TURN_HUNTING*location)
+            print("flying towards face with yaw %d" % yaw)
             condition_yaw(vehicle, yaw)
             send_angular_velocity(vehicle, yaw)
         else:
             # spin in circles until a face is found
             yaw = bound_yaw(yaw+TURN_CIRCLE)
+            print("no face, spinning with yaw %d" % yaw)
             condition_yaw(vehicle, yaw)
             time_sleep(1)
