@@ -3,7 +3,7 @@ from pymavlink import mavutil # Needed for command message definitions
 
 from time import sleep as time_sleep
 from math import sin,cos,pi as PI
-from os import sep as FILE_SEP
+from os import sep as FILE_SEP, path as os_path
 
 INIT_HEIGHT = 2.5
 TURN_HUNTING = 10
@@ -136,12 +136,12 @@ def connect_drone():
     return vehicle
 
 def get_reading():
-    with open(OUT_READING_PATH, 'r') as f:
-        line = f.readline().rstrip()
-        if len(line) > 3:
-            return line[0], float(line[2:])
-        else:
-            return "N", 0
+    if os_path.exists(OUT_READING_PATH):
+        with open(OUT_READING_PATH, 'r') as f:
+            line = f.readline().rstrip()
+            if len(line) > 3:
+                return line[0], float(line[2:])
+    return "N", 0
 
 def bound_yaw(yaw):
     return 360+yaw if yaw < 0 else yaw
