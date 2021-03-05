@@ -1,7 +1,7 @@
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 from pymavlink import mavutil # Needed for command message definitions
 
-from time import sleep as time_sleep
+from time import sleep as time_sleep, time as get_time
 from math import sin,cos,pi as PI
 from os import sep as FILE_SEP, path as os_path
 
@@ -10,6 +10,7 @@ TURN_HUNTING = 10
 TURN_CIRCLE = 10
 SPEED = 2
 DEG_TO_RAD = PI/180
+VALID_READING_TIMER = 0.2
 
 OUT_READING_PATH = "out" + FILE_SEP + "reading.txt"
 
@@ -138,9 +139,9 @@ def connect_drone():
 def get_reading():
     if os_path.exists(OUT_READING_PATH):
         with open(OUT_READING_PATH, 'r') as f:
-            line = f.readline().rstrip()
-            if len(line) > 3:
-                return line[0], float(line[2:])
+            arr = f.readline().rstrip().split(' ')
+            if len(arr) == 3 and get_time() - float(arr[0]) < VALID_READING_TIMER:
+                return arr[1], float(arr[2])
     return "N", 0
 
 def bound_yaw(yaw):

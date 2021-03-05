@@ -2,7 +2,7 @@ import face_recognition as frec
 from picamera import PiCamera
 import numpy as np
 
-from time import sleep as time_sleep
+from time import sleep as time_sleep, time as get_time
 from os import sep as FILE_SEP
 
 TARGET_IMG_PATH = "target.jpg"
@@ -39,6 +39,7 @@ if __name__ == "__main__":
 
         # Image Capture and Analysis
         camera.capture(OUT_IMG_PATH)
+        time = get_time()
         img = frec.load_image_file(OUT_IMG_PATH)
         face_locs = frec.face_locations(img)
         num_faces = len(face_locs)
@@ -62,9 +63,9 @@ if __name__ == "__main__":
                 match = "N" if (REQUIRES_MATCH and min_dist < THRESHOLD) else "Y"
                 location = (left+right)/IMG_WIDTH - 1 # ranges from -1 to 1 (but its hard to get to -1/1)
                 # size = (right-left)/IMG_WIDTH
-                write_reading(f"{match} {location}")
+                write_reading(f"{time} {match} {location}")
             else:
-                write_reading(f"N 0")
+                write_reading(f"{time} N 0")
 
         print("")
         time_sleep(.2)
