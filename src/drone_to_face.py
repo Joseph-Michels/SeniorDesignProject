@@ -140,12 +140,15 @@ def get_reading():
     if os_path.exists(OUT_READING_PATH):
         with open(OUT_READING_PATH, 'r') as f:
             arr = f.readline().rstrip().split(' ')
-            if len(arr) == 3 and get_time() - float(arr[0]) < VALID_READING_TIMER:
-                return arr[1], float(arr[2])
+            if len(arr) == 3:
+                if get_time() - float(arr[0]) < VALID_READING_TIMER:
+                    return arr[1], float(arr[2])
+                else:
+                    print("Invalid time reading")
     return "N", 0
 
 def bound_yaw(yaw):
-    return 360+yaw if yaw < 0 else yaw
+    return yaw+360 if yaw < 0 else (yaw-360 if yaw >= 360 else yaw)
 
 if __name__ == "__main__":
     vehicle = connect_drone()
