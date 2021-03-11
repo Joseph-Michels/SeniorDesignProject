@@ -10,7 +10,7 @@ TURN_HUNTING = 10
 TURN_CIRCLE = 10
 SPEED = 2
 DEG_TO_RAD = PI/180
-VALID_READING_TIMER = 0.2
+VALID_READING_TIMER = 5
 
 OUT_READING_PATH = "out" + FILE_SEP + "reading.txt"
 
@@ -112,6 +112,35 @@ def send_angular_velocity(vehicle, yaw, duration=1):
         vehicle.send_mavlink(msg)
         time_sleep(1)
 
+def send_velocity_stop(vehicle):
+    """
+    Move vehicle in direction based on specified velocity vectors and
+    for the specified duration.
+    This uses the SET_POSITION_TARGET_LOCAL_NED command with a type mask enabling only 
+    velocity components 
+    (http://dev.ardupilot.com/wiki/copter-commands-in-guided-mode/#set_position_target_local_ned).
+    
+    Note that from AC3.3 the message should be re-sent every second (after about 3 seconds
+    with no message the velocity will drop back to zero). In AC3.2.1 and earlier the specified
+    velocity persists until it is canceled. The code below should work on either version 
+    (sending the message multiple times does not cause problems).
+    
+    See the above link for information on the type_mask (0=enable, 1=ignore). 
+    At time of writing, acceleration and yaw bits are ignored.
+    """
+    msg = vehicle.message_factory.set_position_target_local_ned_encode(
+        0,       # time_boot_ms (not used)
+        0, 0,    # target system, target component
+        mavutil.mavlink.MAV_FRAME_LOCAL_NED, # frame
+        0b0000111111000111, # type_mask (only speeds enabled)
+        0, 0, 0, # x, y, z positions (not used)
+        0, 0, 0, # x, y, z velocity in m/s
+        0, 0, 0, # x, y, z acceleration (not supported yet, ignored in GCS_Mavlink)
+        0, 0)    # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink) 
+
+    vehicle.send_mavlink(msg)
+    time_sleep(1)
+
 def connect_drone():
     import argparse  
     parser = argparse.ArgumentParser(description='Control Copter and send commands in GUIDED mode ')
@@ -166,9 +195,4 @@ if __name__ == "__main__":
             print("flying towards face with yaw %d" % yaw)
             condition_yaw(vehicle, yaw)
             send_angular_velocity(vehicle, yaw)
-        else:
-            # spin in circles until a face is found
-            yaw = bound_yaw(yaw+TURN_CIRCLE)
-            print("no face, spinning with yaw %d" % yaw)
-            condition_yaw(vehicle, yaw)
-            time_sleep(1)
+            send_velocity_stop(vehicle)
