@@ -5,7 +5,7 @@ from time import sleep as time_sleep, time as get_time
 from math import sin,cos,pi as PI
 from os import sep as FILE_SEP, path as os_path
 
-INIT_HEIGHT = 2.5
+INIT_HEIGHT = 2.8
 TURN_HUNTING = 10
 TURN_CIRCLE = 10
 SPEED = 2
