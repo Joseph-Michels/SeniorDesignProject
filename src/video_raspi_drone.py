@@ -9,8 +9,8 @@ TARGET_IMG_PATH = "target.jpg"
 OUT_IMG_PATH = "out" + FILE_SEP + "image.jpg"
 OUT_READING_PATH = "out" + FILE_SEP + "reading.txt"
 
-IMG_WIDTH = 1024
-IMG_HEIGHT = 768
+IMG_WIDTH = 640
+IMG_HEIGHT = 480
 REQUIRES_MATCH = False
 THRESHOLD = 0.7
 
